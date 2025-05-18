@@ -82,18 +82,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-try {
-  const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: message }],
-  });
-  const reply = response.choices[0].message.content;
-  await sendMessage(senderId, reply);
-} catch (error) {
-  console.error('OpenAI error:', error.message, error.status);
-  if (error.status === 429) {
-    await sendMessage(senderId, 'I’ve hit my request limit. Please try again later.');
-  } else {
-    await sendMessage(senderId, 'Sorry, something went wrong.');
-  }
-}
