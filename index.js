@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require('openai'); // Updated import
 
 const app = express();
 app.use(express.json());
@@ -12,10 +12,9 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // OpenAI configuration
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // Webhook verification
 app.get('/webhook', (req, res) => {
@@ -43,11 +42,11 @@ app.post('/webhook', async (req, res) => {
       if (message) {
         // Call OpenAI API
         try {
-          const response = await openai.createChatCompletion({
+          const response = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: message }],
           });
-          const reply = response.data.choices[0].message.content;
+          const reply = response.choices[0].message.content;
 
           // Send reply via Messenger
           await sendMessage(senderId, reply);
